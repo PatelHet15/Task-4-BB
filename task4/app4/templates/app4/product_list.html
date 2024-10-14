@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .price-range {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .no-products {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Product List</h1>
+
+        <form method="GET" class="mb-4">
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    <label for="num_segments" class="sr-only">Number of Segments:</label>
+                    <input type="number" name="num_segments" id="num_segments" 
+                           class="form-control" 
+                           placeholder="Enter number of segments" 
+                           value="{{ request.GET.num_segments|default_if_none:'' }}" min="1">
+                </div>
+                
+                <div class="col-auto">
+                    <label for="size" class="sr-only">Size:</label>
+                    <select name="size" id="size" class="form-control">
+                        <option value="">--Select Size--</option>
+                        {% for size in sizes %}
+                        <option value="{{ size }}" {% if size == selected_size %}selected{% endif %}>{{ size }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+
+        <h2>Price Ranges</h2>
+        <ul class="list-group mb-4">
+            {% for price_range in price_ranges %}
+                <li class="list-group-item price-range">
+                    ${{ price_range.0 }} - ${{ price_range.1 }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td>${{ product.price }}</td>
+                        <td>{{ product.size }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if not products %}
+            <div class="no-products">No products available in this segment.</div>
+        {% endif %}
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-success btn-lg">Go Home</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('filterForm').addEventListener('submit', function() {
+            document.getElementById('num_segments').value = '';
+            document.getElementById('size').value = '';
+        });
+    </script>
+</body>
+</html>
